@@ -24,10 +24,5 @@ public class VideoManager : MonoBehaviour
         videoAnim.SetBool("videoApp", false);
     }
     
-    public IEnumerator chestsActiveness(GameObject self, GameObject nextChest)
-    {
-        nextChest.SetActive(true);
-        yield return new WaitForSeconds(1);
-        self.SetActive(false);
-    }
+
 }

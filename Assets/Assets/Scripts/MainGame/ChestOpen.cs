@@ -13,10 +13,12 @@ public class ChestOpen : MonoBehaviour
     public bool openedTruly;
 
     VideoManager videoMan;
+    LevelManager levelMan;
 
     private void Start()
     {
         videoMan = GameObject.FindGameObjectWithTag("VideoManager").GetComponent<VideoManager>();
+        levelMan = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>();
     }
 
     void Update() //wird noch die kurbel
@@ -55,7 +57,7 @@ public class ChestOpen : MonoBehaviour
 
             if (nextChest != null)
             {
-                StartCoroutine(videoMan.chestsActiveness(gameObject, nextChest));
+                levelMan.giveResetInfo(gameObject, nextChest);
                 GetComponentInParent<Animator>().Play("Move");//SetTrigger("nextLevel");
                 Debug.Log("closedTruly");
             }
