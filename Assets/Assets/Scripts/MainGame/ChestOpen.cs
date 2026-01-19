@@ -10,7 +10,7 @@ public class ChestOpen : MonoBehaviour
     [SerializeField] string cameraReqs;
     [SerializeField] GameObject nextChest;
 
-    bool openedTruly;
+    public bool openedTruly;
 
     VideoManager videoMan;
 
@@ -26,14 +26,14 @@ public class ChestOpen : MonoBehaviour
     }
 
 
-    // DIE METHODE MUSS NOCH MIT DER KAMERA COMPARISSON VERBUNDEN WERDEN
-    void StartCamComparrisson(string camOutput)
-    {
-        if (camOutput.Contains(cameraReqs))
-        {
-            OpenTheChest(slider.value); // Slider íst temporär
-        }
-    }
+    //// DIE METHODE MUSS NOCH MIT DER KAMERA COMPARISSON VERBUNDEN WERDEN
+    //void StartCamComparrisson(string camOutput)
+    //{
+    //    if (camOutput.Contains(cameraReqs))
+    //    {
+    //        OpenTheChest(slider.value); // Slider íst temporär
+    //    }
+    //}
     
 
     void OpenTheChest(float degreePerTick)
@@ -41,7 +41,7 @@ public class ChestOpen : MonoBehaviour
         float rotTranslate = degreePerTick;
         gameObject.transform.rotation = Quaternion.Euler(degreePerTick, 0, 0);
 
-        if (rotTranslate >= 170f)
+        if (rotTranslate >= 170f && !openedTruly)
         {
             videoMan.PlayVideo(stage);
             openedTruly = true;
@@ -51,10 +51,13 @@ public class ChestOpen : MonoBehaviour
         {
 
             videoMan.StopVideo();
-            GetComponentInParent<Animator>().SetTrigger("nextLevel");
+            
+
             if (nextChest != null)
             {
                 StartCoroutine(videoMan.chestsActiveness(gameObject, nextChest));
+                GetComponentInParent<Animator>().Play("Move");//SetTrigger("nextLevel");
+                Debug.Log("closedTruly");
             }
             else
             {
