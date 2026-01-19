@@ -75,4 +75,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Recognition Assets
-/StreamingAssets/
+/Assets/StreamingAssets
+Assets/StreamingAssets.meta
