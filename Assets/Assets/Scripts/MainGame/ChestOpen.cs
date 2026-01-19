@@ -8,6 +8,7 @@ public class ChestOpen : MonoBehaviour
     [SerializeField] int stage;
     [SerializeField] float requiredSpeed;
     [SerializeField] string cameraReqs;
+    [SerializeField] GameObject nextChest;
 
     bool openedTruly;
 
@@ -44,15 +45,22 @@ public class ChestOpen : MonoBehaviour
         {
             videoMan.PlayVideo(stage);
             openedTruly = true;
-            
+
         }
         else if (rotTranslate < 10f && openedTruly == true)
         {
 
             videoMan.StopVideo();
             GetComponentInParent<Animator>().SetTrigger("nextLevel");
-            
-            openedTruly =false;
+            if (nextChest != null)
+            {
+                StartCoroutine(videoMan.chestsActiveness(gameObject, nextChest));
+            }
+            else
+            {
+                Debug.Log("Fertig");
+            }
+            openedTruly = false;
         }
     }
 
