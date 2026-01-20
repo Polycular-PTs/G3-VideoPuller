@@ -7,7 +7,7 @@ public class KurbelRotation : MonoBehaviour
 { 
 
     public float currentAngle = 0f;
-    public float stepAngle = 10f;
+    public float stepAngle = 30f;
     public Text gradText; 
 
     void Update()

@@ -309,7 +309,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KurbelRotation
   currentAngle: 0
-  stepAngle: 10
+  stepAngle: 30
   gradText: {fileID: 131514621}
 --- !u!114 &317074789
 MonoBehaviour:
