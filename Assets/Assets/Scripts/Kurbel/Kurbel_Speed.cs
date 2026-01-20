@@ -53,7 +53,8 @@ public class KurbelGeschwindigkeit : MonoBehaviour
         {
             
             float rpm = (rotationSpeed / 10f) * 60f;
-            speedText.text = $"Drehzahl: {rpm:F1} RPM";
+            string v = $"Drehzahl: {rpm:F1} RPM";
+            speedText.text = v;
 
         }
     }
