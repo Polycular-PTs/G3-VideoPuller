@@ -8,8 +8,21 @@ Das System sollte an einem mehr oder weniger oeffentlichen Ort stehen, so dass M
 Das Projekt dient also als soziales Experiment, in dem man herausfindet, wie weit Menschen gehen, nur um sich "sinnlose" Videos anzusehen.
 
 
-# Nutzungsanleitung:
-In der Main Scene (9:16 Hochformat) oeffnet man die Kiste mit der Maus mit dem Slider oben am Screen.
+# Setup:
+Zuerst muss, um alle Funktionen korrekt verwenden zu koennen, der StreamingAssets Ordner von folgendem Link heruntergeladen werden und in das Projekt unter \Video_Puller\Assets\ eingefuegt werden.
+
+Download Link:
+
+https://drive.google.com/drive/folders/1B5JOegBrK-KJxL1OKNKihTMmV6ttmb-v?usp=sharing
+
+Der gesamte Ordner mit Inhalten wird dann hier eingefuegt:
+
+<img width="657" height="540" alt="StreamingAssets" src="https://github.com/user-attachments/assets/82128762-1736-4040-a96e-d99fd9367034" />
+
+Der Ordner und seine Inhalte muessen gleich benannt bleiben.
+
+# Nutzungsanleitung
+In der Main Scene (9:16 Hochformat) oeffBittenet man die Kiste mit der Maus mit dem Slider oben am Screen.
 Um zur nächsten Kiste und somit zum nächsten Video zu gelangen -> Slider Wieder nach links um die Kiste zu schliessen und dann wieder nach rechts un die naechste zu oeffnen.
 
 Screenshot:
