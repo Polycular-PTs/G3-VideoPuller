@@ -21,7 +21,9 @@ Der gesamte Ordner mit Inhalten wird dann hier eingefuegt:
 
 Der Ordner und seine Inhalte muessen gleich benannt bleiben.
 
+
 # Nutzungsanleitung
+# Main Scene (gaenzlich von Gabriel Gerlitz erstellt)
 In der Main Scene (9:16 Hochformat) oeffBittenet man die Kiste mit der Maus mit dem Slider oben am Screen.
 Um zur nächsten Kiste und somit zum nächsten Video zu gelangen -> Slider Wieder nach links um die Kiste zu schliessen und dann wieder nach rechts un die naechste zu oeffnen.
 
@@ -31,7 +33,7 @@ Screenshot:
 
 
 
-
+# Detection Tester Scene (gaenzlich von Simon Wagenhofer erstellt)
 In der DetectionTester Scene (9:16 Hochformat) muss man nach dem starten der Szene einem Moment warten, bis die beiden Programme (objectDetection_build_noWindow.exe und poseDetection_build_noWindow.exe) gestartet sind.
 Das dauert in der Regel aber nicht laenger als 30 Sekunden. Diese Programme haben jedoch absichtlich kein Fenster, man kann also nur im Task manager ueberpruefen, ob sie laufen.
 
@@ -44,6 +46,7 @@ Object Detection gibt jede Sekunde aus, welche Objekte bei der standard webcam g
 Action Detection erkennt, wie wahrscheinlich eine Person im Frame gerade springt oder winkt anhand der Position ihrer Koerperteile. Je hoeher die Zahl, desto wahrscheinlicher.
 Jedoch MUSS man beim Wechseln zwischen den beiden Programmen, dazwischen immer den roten "Close Connection" Knopf druecken, um zu vermeiden, dass beide Programme gleichzeitig versuchen auf die gleiche Webcam zuzugreifen. Das kann unvorhersehbare Probleme auslösen.
 
+#Kurbel Scene (gaenzlich von Aijub Termeche erstellt)
 Die Kurbel Scene bedient man vorerst mit den Pfeiltasaten:
 Links <-, um die Kurbel rueckwaerts zu drehen und Rechts ->, um die Kurbel vorwaerts zu drehen.
 Hierbei ist ein Tastendruck als ein Zahn der Kurbel anzusehen, also eine zwoelftel Umdrehung.
