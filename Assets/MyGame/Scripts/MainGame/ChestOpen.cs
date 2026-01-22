@@ -52,18 +52,17 @@ public class ChestOpen : MonoBehaviour
 
     
 
-    void OpenTheChest(float degreePerTick)
+    void OpenTheChest(float rotationDegrees)
     {
-        float rotTranslate = degreePerTick;
-        gameObject.transform.rotation = Quaternion.Euler(degreePerTick, 0, 0);
+        gameObject.transform.rotation = Quaternion.Euler(rotationDegrees, 0, 0);
 
-        if (rotTranslate >= openThresholdDegrees && !openedTruly //Gabriel
+        if (rotationDegrees >= openThresholdDegrees && !openedTruly //Gabriel
             && detectionMan.message.Contains(cameraReqs[stage])) //Simon
         {
             videoMan.PlayVideo(stage);
             openedTruly = true;
         }
-        else if (rotTranslate < closeThresholdDegrees && openedTruly == true)
+        else if (rotationDegrees < closeThresholdDegrees && openedTruly == true)
         {
             detectionMan.CloseConnection(); //Simon
             videoMan.StopVideo();
