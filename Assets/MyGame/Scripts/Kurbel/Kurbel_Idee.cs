@@ -25,12 +25,14 @@ public class KurbelIdee : MonoBehaviour
         }
 
 
-        void UpdateText() 
+        
+    }
+
+    void UpdateText()
+    {
+        if (counterText != null)
         {
-            if (counterText != null)
-            {
-                counterText.text = "Zaehler" + counter;
-            }
+            counterText.text = "Zaehler" + counter;
         }
     }
 }

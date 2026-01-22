@@ -22,15 +22,15 @@ public class ExeCaller : MonoBehaviour
 
         ProcessStartInfo objectDetectionstartInfo = new ProcessStartInfo
         {
-            CreateNoWindow = false,
-            UseShellExecute = true,
+            CreateNoWindow = true,
+            UseShellExecute = false,
             FileName = objectDetectionExePath,
         };
 
         ProcessStartInfo poseDetectionstartInfo = new ProcessStartInfo
         {
-            CreateNoWindow = false,
-            UseShellExecute = true,
+            CreateNoWindow = true,
+            UseShellExecute = false,
             FileName = poseDetectionExePath,
         };
 
