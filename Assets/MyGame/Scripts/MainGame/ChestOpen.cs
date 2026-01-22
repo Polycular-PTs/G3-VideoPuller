@@ -11,6 +11,8 @@ public class ChestOpen : MonoBehaviour
     [SerializeField] int[] detectionUsed; //Simon
     [SerializeField] GameObject nextChest;
 
+    const float openThresholdDegrees = 170f; //Simon
+    const float closeThresholdDegrees = 10f; //Simon
     public bool openedTruly;
     public string camMessage; //Simon
 
@@ -55,13 +57,13 @@ public class ChestOpen : MonoBehaviour
         float rotTranslate = degreePerTick;
         gameObject.transform.rotation = Quaternion.Euler(degreePerTick, 0, 0);
 
-        if (rotTranslate >= 170f && !openedTruly //Gabriel
+        if (rotTranslate >= openThresholdDegrees && !openedTruly //Gabriel
             && detectionMan.message.Contains(cameraReqs[stage])) //Simon
         {
             videoMan.PlayVideo(stage);
             openedTruly = true;
         }
-        else if (rotTranslate < 10f && openedTruly == true)
+        else if (rotTranslate < closeThresholdDegrees && openedTruly == true)
         {
             detectionMan.CloseConnection(); //Simon
             videoMan.StopVideo();
