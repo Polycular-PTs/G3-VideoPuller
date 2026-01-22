@@ -79,7 +79,8 @@ public class SocketRecieve_V2 : MonoBehaviour
             }
 
             Debug.Log("Socket connection closed manually.");
-            
+
+            if (summaryText == null) return;
             summaryText.text = "Ready for next connection!";
         }
         catch (Exception e)
