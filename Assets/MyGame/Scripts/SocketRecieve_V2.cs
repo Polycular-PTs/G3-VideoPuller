@@ -11,9 +11,11 @@ public class SocketRecieve_V2 : MonoBehaviour
     StreamReader reader;
     public string message;
 
+    [SerializeField] CountdownManager countdownManager;
+
     void Start()
     {
-        Application.targetFrameRate = 30;
+        Application.targetFrameRate = 60;
 
         
     }
@@ -28,6 +30,7 @@ public class SocketRecieve_V2 : MonoBehaviour
             client = testClient;
             reader = new StreamReader(client.GetStream());
             Debug.Log("Connected on port " + port);
+            
         }
         catch (Exception)
         {
@@ -46,6 +49,10 @@ public class SocketRecieve_V2 : MonoBehaviour
             
             if (!string.IsNullOrEmpty(message))
             {
+                if (countdownManager.isConnected == false)
+                {
+                    countdownManager.isConnected = true;
+                }
                 Debug.Log("Message from Python revceived");
                 if (summaryText != null)
                     summaryText.text = message;

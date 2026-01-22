@@ -7,6 +7,8 @@ TagManager:
   - VideoManager
   - LevelManager
   - DetectionManager
+  - KurbelRotMan
+  - CountdownManager
   layers:
   - Default
   - TransparentFX

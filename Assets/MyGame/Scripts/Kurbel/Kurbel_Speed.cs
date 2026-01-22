@@ -7,6 +7,7 @@ public class KurbelGeschwindigkeit : MonoBehaviour
     private float lastHitTime = 0f;
     private float rotationSpeed = 0f;
     private int impulseCount = 0;
+    public float rpm;
 
     void Update()
     {
@@ -26,7 +27,6 @@ public class KurbelGeschwindigkeit : MonoBehaviour
 
             lastHitTime = currentTime;
             impulseCount++;
-            UpdateUI();
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -43,20 +43,9 @@ public class KurbelGeschwindigkeit : MonoBehaviour
 
             lastHitTime = currentTime;
             impulseCount++;
-            UpdateUI();
         }
+        rpm = (rotationSpeed / 10f) * 60f;
     }
 
-    void UpdateUI()
-    {
-        if (speedText != null)
-        {
-            
-            float rpm = (rotationSpeed / 10f) * 60f;
-            string v = $"Drehzahl: {rpm:F1} RPM";
-            speedText.text = v;
-
-        }
-    }
 }
 
