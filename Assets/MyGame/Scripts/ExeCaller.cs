@@ -55,10 +55,9 @@ public class ExeCaller : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        UnityEngine.Debug.Log($"Trying to Quit Object Exe: {objectDetectionProgram.ProcessName}");
+        
             KillProcessTree(objectDetectionProgram);
-
-        UnityEngine.Debug.Log($"Trying to Quit Pose Exe: {poseDetectionProgram.ProcessName}");
+        
             KillProcessTree(poseDetectionProgram);
     }
 
@@ -85,6 +84,7 @@ public class ExeCaller : MonoBehaviour
 
         else
         {
+            UnityEngine.Debug.Log($"Trying to Quit the following Program: {process.ProcessName}");
             Process.Start(new ProcessStartInfo
             {
                 FileName = "taskkill",
