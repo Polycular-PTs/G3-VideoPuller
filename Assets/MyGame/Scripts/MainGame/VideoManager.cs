@@ -11,17 +11,21 @@ public class VideoManager : MonoBehaviour
     [SerializeField] VideoClip[] possibleVideo;
 
 
+    private const string VIDEO_APP = "videoApp";
+    private const string VIDEO_DAPP = "videoDapp";
+
+
 
     public void PlayVideo(int stage)
     {
         video.clip = possibleVideo[stage];
-        videoAnim.SetBool("videoDapp", false);
-        videoAnim.SetBool("videoApp", true);
+        videoAnim.SetBool(VIDEO_DAPP, false);
+        videoAnim.SetBool(VIDEO_APP, true);
     }
     public void StopVideo()
     {
-        videoAnim.SetBool("videoDapp", true);
-        videoAnim.SetBool("videoApp", false);
+        videoAnim.SetBool(VIDEO_DAPP, true);
+        videoAnim.SetBool(VIDEO_APP, false);
     }
     
 
