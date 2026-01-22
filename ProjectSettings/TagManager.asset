@@ -6,6 +6,7 @@ TagManager:
   tags:
   - VideoManager
   - LevelManager
+  - DetectionManager
   layers:
   - Default
   - TransparentFX

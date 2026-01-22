@@ -1,24 +1,44 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Collections;
 
 public class ChestOpen : MonoBehaviour
 {
     [SerializeField] Slider slider;
     [SerializeField] int stage;
     [SerializeField] float requiredSpeed;
-    [SerializeField] string cameraReqs;
+    [SerializeField] string[] cameraReqs; //Simon
+    [SerializeField] int[] detectionUsed; //Simon
     [SerializeField] GameObject nextChest;
 
     public bool openedTruly;
+    public string camMessage; //Simon
 
     VideoManager videoMan;
     LevelManager levelMan;
+    SocketRecieve_V2 detectionMan; //Simon
 
     private void Start()
     {
+        //Gabriel
         videoMan = GameObject.FindGameObjectWithTag("VideoManager").GetComponent<VideoManager>();
         levelMan = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>();
+
+
+
+        //Simon
+        detectionMan = GameObject.FindGameObjectWithTag("DetectionManager").GetComponent<SocketRecieve_V2>();
+        cameraReqs[0] = "waving"; cameraReqs[1] = "angry"; cameraReqs[2] = "2x_bottle"; cameraReqs[3] = "jumping"; cameraReqs[4] = "5x_person";
+        detectionUsed[0] = 5006; detectionUsed[1] = 5005; detectionUsed[2] = 5005; detectionUsed[3] = 5006; detectionUsed[4] = 5005;
+        if (stage == 0)
+        {
+            StartCoroutine(ConnectNextStage(stage, 18));
+        }
+
+        else
+        {
+            StartCoroutine(ConnectNextStage(stage, 4));
+        }
     }
 
     void Update() //wird noch die kurbel
@@ -28,14 +48,6 @@ public class ChestOpen : MonoBehaviour
     }
 
 
-    //// DIE METHODE MUSS NOCH MIT DER KAMERA COMPARISSON VERBUNDEN WERDEN
-    //void StartCamComparrisson(string camOutput)
-    //{
-    //    if (camOutput.Contains(cameraReqs))
-    //    {
-    //        OpenTheChest(slider.value); // Slider íst temporär
-    //    }
-    //}
     
 
     void OpenTheChest(float degreePerTick)
@@ -43,22 +55,22 @@ public class ChestOpen : MonoBehaviour
         float rotTranslate = degreePerTick;
         gameObject.transform.rotation = Quaternion.Euler(degreePerTick, 0, 0);
 
-        if (rotTranslate >= 170f && !openedTruly)
+        if (rotTranslate >= 170f && !openedTruly //Gabriel
+            && detectionMan.message.Contains(cameraReqs[stage])) //Simon
         {
             videoMan.PlayVideo(stage);
             openedTruly = true;
-
         }
         else if (rotTranslate < 10f && openedTruly == true)
         {
-
+            detectionMan.CloseConnection(); //Simon
             videoMan.StopVideo();
-            
+
 
             if (nextChest != null)
             {
                 levelMan.giveResetInfo(gameObject, nextChest);
-                GetComponentInParent<Animator>().Play("Move");//SetTrigger("nextLevel");
+                GetComponentInParent<Animator>().Play("Move");
                 Debug.Log("closedTruly");
             }
             else
@@ -67,6 +79,15 @@ public class ChestOpen : MonoBehaviour
             }
             openedTruly = false;
         }
+    }
+
+
+    //Simon
+    IEnumerator ConnectNextStage(int stage, int delay) 
+    {
+        yield return new WaitForSeconds(delay);
+        Debug.Log($"Trying To connect to Port {detectionUsed[stage]}");
+        detectionMan.TryConnect(detectionUsed[stage]);
     }
 
 }

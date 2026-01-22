@@ -7,29 +7,13 @@ using UnityEngine.UI;
 public class SocketRecieve_V2 : MonoBehaviour
 {
     public Text summaryText;
-    TcpClient client;
+    public TcpClient client;
     StreamReader reader;
+    public string message;
 
     void Start()
     {
-        Application.targetFrameRate = 60;
-
-        TryConnect(5005);   // Zuerst versuchen auf port 5005, also mit der Object Detection eine verbindung herzustellen
-
-        if (client == null || !client.Connected)
-        {
-            Debug.Log("Trying fallback port 5006...");
-            TryConnect(5006);   // Dann versuchen auf port 5006, also mit der Action Detection eine verbindung herzustellen
-        }
-
-        if (client != null && client.Connected)
-        {
-            Debug.Log("Connected to Python");
-        }
-        else
-        {
-            Debug.LogError("Could not connect on ports 5005 or 5006.");
-        }
+        Application.targetFrameRate = 30;
 
         
     }
@@ -55,12 +39,16 @@ public class SocketRecieve_V2 : MonoBehaviour
     {
         if (client != null && client.Connected)
         {
-            string msg = reader.ReadLine();
-            if (!string.IsNullOrEmpty(msg))
+            if (client.Available > 0)
             {
-                Debug.Log("From Python: " + msg);
+                message = reader.ReadLine();
+            }
+            
+            if (!string.IsNullOrEmpty(message))
+            {
+                Debug.Log("Message from Python revceived");
                 if (summaryText != null)
-                    summaryText.text = msg;
+                    summaryText.text = message;
             }
         }
     }
