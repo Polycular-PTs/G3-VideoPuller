@@ -70,6 +70,7 @@ public class ChestOpen : MonoBehaviour
         if (rotationDegrees >= OPEN_THRESHOLD_DEGREES && !openedTruly //Gabriel
             && detectionMan.message.Contains(cameraReqs[stage])) //Simon
         {
+            Debug.Log($"Playing video for stage: {stage}");
             videoMan.PlayVideo(stage);
             openedTruly = true;
         }
@@ -81,7 +82,7 @@ public class ChestOpen : MonoBehaviour
 
             if (nextChest != null)
             {
-                levelMan.giveResetInfo(gameObject, nextChest);
+                levelMan.giveResetInfo(gameObject.transform.parent.gameObject, nextChest);
                 GetComponentInParent<Animator>().Play("Move");
                 Debug.Log("closedTruly");
             }
