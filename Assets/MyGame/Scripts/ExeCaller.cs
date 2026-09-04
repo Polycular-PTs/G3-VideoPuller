@@ -1,101 +1,58 @@
-using System;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 
-
 public class ExeCaller : MonoBehaviour
 {
-    Process objectDetectionProgram;
-    Process poseDetectionProgram;
-    
-
-
-
+    private Process masterBackendProcess;
 
     void Awake()
     {
-        
-        string objectDetectionExePath = Path.Combine(Application.streamingAssetsPath, "objectDetection_build_noWindow.exe");
-        string poseDetectionExePath = Path.Combine(Application.streamingAssetsPath, "poseDetection_build_noWindow.exe");
+        string batPath = Path.Combine(Application.streamingAssetsPath, "start_ai_backends.bat");
 
-        ProcessStartInfo objectDetectionstartInfo = new ProcessStartInfo
+        if (!File.Exists(batPath))
         {
-            CreateNoWindow = true,
-            UseShellExecute = false,
-            FileName = objectDetectionExePath,
-        };
-
-        ProcessStartInfo poseDetectionstartInfo = new ProcessStartInfo
-        {
-            CreateNoWindow = true,
-            UseShellExecute = false,
-            FileName = poseDetectionExePath,
-        };
-
-        if (!File.Exists(objectDetectionExePath))
-        {
-            UnityEngine.Debug.LogError("Object detection build not found at path: " + objectDetectionExePath);
+            UnityEngine.Debug.LogError("Setup script not found at: " + batPath);
+            return;
         }
 
-        if (!File.Exists(poseDetectionExePath))
+        ProcessStartInfo startInfo = new ProcessStartInfo
         {
-            UnityEngine.Debug.LogError("Pose detection build not found at path: " + poseDetectionExePath);
-        }
+            FileName = "cmd.exe",
+            Arguments = "/c \"" + batPath + "\"",
+            // Show the window so the user sees the download progress on the first run
+            CreateNoWindow = false,
+            UseShellExecute = true,
+        };
 
-
-        StartCoroutine(StartPrograms(objectDetectionstartInfo, poseDetectionstartInfo));
-        
-
-        
-
-
+        masterBackendProcess = Process.Start(startInfo);
+        UnityEngine.Debug.Log($"AI Backends launching... Main Process ID: {masterBackendProcess.Id}");
     }
 
     void OnApplicationQuit()
     {
-        
-            KillProcessTree(objectDetectionProgram);
-        
-            KillProcessTree(poseDetectionProgram);
-    }
-
-
-    IEnumerator StartPrograms(ProcessStartInfo objectDetection, ProcessStartInfo poseDetection)
-    {
-        
-        objectDetectionProgram = Process.Start(objectDetection);
-        yield return new WaitForSeconds(1);
-        UnityEngine.Debug.Log($"Object Detection Process started: {objectDetectionProgram.ProcessName}");
-        poseDetectionProgram = Process.Start(poseDetection);
-        yield return new WaitForSeconds(1);
-        UnityEngine.Debug.Log($"Pose Detection Process started: {poseDetectionProgram.ProcessName}");
-
+        UnityEngine.Debug.Log($"Trying to Kill Process Tree... Main Process ID: {masterBackendProcess.Id}");
+        KillProcessTree(masterBackendProcess);
     }
 
     void KillProcessTree(Process process)
     {
         if (process == null || process.HasExited)
         {
-            UnityEngine.Debug.Log($"Already quit Process {process.ProcessName}");
             return;
         }
 
-        else
+        UnityEngine.Debug.Log($"Shutting down AI Backends (PID {process.Id})...");
+
+        // The /T kills the .bat file AND both Python scripts it spawned
+        Process.Start(new ProcessStartInfo
         {
-            UnityEngine.Debug.Log($"Trying to Quit the following Program: {process.ProcessName}");
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "taskkill",
-                Arguments = $"/PID {process.Id} /T /F",
-                CreateNoWindow = true,
-                UseShellExecute = false
-            });
+            FileName = "taskkill",
+            Arguments = $"/PID {process.Id} /T /F",
+            CreateNoWindow = true,
+            UseShellExecute = false
+        });
 
-            process.Dispose();
-        }
-            
+        process.Dispose();
     }
-
 }
