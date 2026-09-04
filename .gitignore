@@ -75,5 +75,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Recognition Assets
-/Assets/StreamingAssets
-Assets/StreamingAssets.meta
+/Assets/StreamingAssets/python310
+/Assets/StreamingAssets/python310.meta
