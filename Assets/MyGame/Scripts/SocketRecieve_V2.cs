@@ -59,6 +59,24 @@ public class SocketRecieve_V2 : MonoBehaviour
     }
 
 
+    public void SendCaptureCommand(string fileName)
+    {
+        if (client != null && client.Connected)
+        {
+            try
+            {
+                StreamWriter writer = new StreamWriter(client.GetStream());
+                writer.AutoFlush = true;
+                writer.WriteLine($"CAPTURE:{fileName}");
+                Debug.Log($"[Socket] Requested Python capture: {fileName}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[Socket] Failed to send capture command: {e.Message}");
+            }
+        }
+    }
+
 
     void OnApplicationQuit()
     {

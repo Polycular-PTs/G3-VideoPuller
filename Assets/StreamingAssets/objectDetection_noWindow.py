@@ -5,6 +5,11 @@ from collections import defaultdict
 from deepface import DeepFace
 import socket
 from pygrabber.dshow_graph import FilterGraph
+import os
+
+CAPTURE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "captures"))
+os.makedirs(CAPTURE_DIR, exist_ok=True)
+TARGET_SIZE = (500, 500)
 
 def get_obs_camera_index():
     try:
@@ -18,6 +23,79 @@ def get_obs_camera_index():
         print(f"Error reading camera names: {e}")
     return 0
 
+
+
+
+def save_smart_crop_object(frame, results, filename, last_face_pos):
+    h, w, _ = frame.shape
+    center_x, center_y = None, None
+    crop_size = None
+
+    # 1. Strictly filter for 'person' class (cls == 0)
+    person_boxes = []
+    for box in results[0].boxes:
+        if int(box.cls[0]) == 0 and float(box.conf[0]) > 0.3:
+            xyxy = box.xyxy[0].cpu().numpy().astype(int)
+            area = (xyxy[2] - xyxy[0]) * (xyxy[3] - xyxy[1])
+            person_boxes.append((area, xyxy))
+
+    if person_boxes:
+        person_boxes.sort(key=lambda b: b[0], reverse=True) # Largest person
+        _, xyxy = person_boxes[0]
+        
+        box_w = xyxy[2] - xyxy[0]
+        box_h = xyxy[3] - xyxy[1]
+        
+        center_x = (xyxy[0] + xyxy[2]) // 2
+        center_y = xyxy[1] + int(box_h * 0.22) # Upper 22% targets the face
+        crop_size = int(max(box_w * 1.5, box_h * 0.55))
+
+    # 2. Fallback to Last Known Position or Screen Center
+    if center_x is None:
+        if last_face_pos is not None:
+            center_x, center_y, crop_size = last_face_pos
+        else:
+            center_x, center_y = w // 2, int(h * 0.35)
+            crop_size = int(min(w, h) * 0.5)
+
+    # 3. Calculate 1:1 Square Box & Shift Inward Away From Frame Edges
+    crop_size = max(250, min(int(crop_size), min(w, h)))
+    half = crop_size // 2
+
+    x1 = int(center_x - half)
+    x2 = int(center_x + half)
+    y1 = int(center_y - half)
+    y2 = int(center_y + half)
+
+    if x1 < 0:
+        x2 += abs(x1)
+        x1 = 0
+    if x2 > w:
+        x1 -= (x2 - w)
+        x2 = w
+    if y1 < 0:
+        y2 += abs(y1)
+        y1 = 0
+    if y2 > h:
+        y1 -= (y2 - h)
+        y2 = h
+
+    x1, x2 = max(0, x1), min(w, x2)
+    y1, y2 = max(0, y1), min(h, y2)
+
+    crop = frame[y1:y2, x1:x2]
+    crop_resized = cv2.resize(crop, TARGET_SIZE, interpolation=cv2.INTER_AREA)
+
+    filepath = os.path.join(CAPTURE_DIR, filename)
+    cv2.imwrite(filepath, crop_resized)
+    print(f"[PhotoSaved] Saved uniform object crop to {filepath}")
+
+    return (center_x, center_y, crop_size)
+
+
+
+
+
 model = YOLO("yolo11n.pt")
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,6 +108,7 @@ while True:
     print("Waiting for Unity to connect...")
     conn, addr = sock.accept()
     print(f"Connected to Unity at {addr}")
+    conn.setblocking(False)
 
     cam_index = get_obs_camera_index()
     cap = cv2.VideoCapture(cam_index, cv2.CAP_DSHOW)
@@ -40,9 +119,22 @@ while True:
     max_objects = defaultdict(int)
     start_time = time.time()
 
+    last_face_pos = None
+    
     try:
         while cap.isOpened():
             ret, frame = cap.read()
+
+            # Check for incoming capture commands from Unity
+            try:
+                data = conn.recv(1024).decode('utf-8')
+                if data:
+                    for line in data.strip().split('\n'):
+                        if line.startswith("CAPTURE:"):
+                            filename = line.split("CAPTURE:")[1]
+                            last_face_pos = save_smart_crop_object(frame, results, filename, last_face_pos)
+            except BlockingIOError:
+                pass
             if not ret:
                 break
 

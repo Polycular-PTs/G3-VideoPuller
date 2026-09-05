@@ -18,6 +18,7 @@ public class ChestOpen : MonoBehaviour
     const int CONNECTION_DELAY_STAGE1 = 5;
     const int CONNECTION_DELAY_OTHER_STAGES = 4;
     const float GAME_RESTART_DELAY = 20f;
+    const float DELAY_REACTION = 2.5f;
     public bool openedTruly;
     public string camMessage; //Simon
 
@@ -71,6 +72,9 @@ public class ChestOpen : MonoBehaviour
             Debug.Log($"Playing video for stage: {stage}");
             videoMan.PlayVideo(stage);
             openedTruly = true;
+
+            detectionMan.SendCaptureCommand($"stage_{stage}_action.jpg");
+            StartCoroutine(CaptureReelReaction(DELAY_REACTION));
         }
         else if (rotationDegrees < CLOSE_THRESHOLD_DEGREES && openedTruly == true)
         {
@@ -94,6 +98,14 @@ public class ChestOpen : MonoBehaviour
         }
     }
 
+    IEnumerator CaptureReelReaction(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (openedTruly)
+        {
+            detectionMan.SendCaptureCommand($"stage_{stage}_reel.jpg");
+        }
+    }
 
     // Simon
     IEnumerator ConnectNextStage(int stage, int delay)
