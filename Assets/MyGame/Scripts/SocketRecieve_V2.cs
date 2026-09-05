@@ -50,6 +50,10 @@ public class SocketRecieve_V2 : MonoBehaviour
                 Debug.Log("Message from Python revceived");
                 if (summaryText != null)
                     summaryText.text = message;
+                else
+                {
+                    Debug.Log("summary Text is null");
+                }
             }
         }
     }
@@ -62,6 +66,10 @@ public class SocketRecieve_V2 : MonoBehaviour
         client?.Close();
     }
 
+    private void OnDisable()
+    {
+        CloseConnection();
+    }
 
     public void CloseConnection()
     {
@@ -79,10 +87,13 @@ public class SocketRecieve_V2 : MonoBehaviour
                 client = null;
             }
 
+            message = "";
             Debug.Log("Socket connection closed manually.");
 
-            if (summaryText == null) return;
-            summaryText.text = "Ready for next connection!";
+            if (summaryText != null)
+            {
+                summaryText.text = "Ready for next connection!";
+            }
         }
         catch (Exception e)
         {

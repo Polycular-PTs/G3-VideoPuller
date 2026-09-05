@@ -4,10 +4,22 @@ using UnityEngine;
 
 public class ExeCaller : MonoBehaviour
 {
+    private static ExeCaller instance;
     private Process masterBackendProcess;
 
     void Awake()
     {
+        // If an ExeCaller already exists from the first load, destroy the duplicate in the new scene
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject); // Persists across scene reloads
+
+
         string batPath = Path.Combine(Application.streamingAssetsPath, "start_ai_backends.bat");
 
         if (!File.Exists(batPath))
@@ -34,6 +46,7 @@ public class ExeCaller : MonoBehaviour
         UnityEngine.Debug.Log($"Trying to Kill Process Tree... Main Process ID: {masterBackendProcess.Id}");
         KillProcessTree(masterBackendProcess);
     }
+
 
     void KillProcessTree(Process process)
     {

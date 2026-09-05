@@ -88,7 +88,7 @@ public class ChestOpen : MonoBehaviour
             else
             {
                 Debug.Log("Fertig");
-                StartCoroutine(RestartGame(GAME_RESTART_DELAY));
+                StartCoroutine(RestartGameWithDelay(GAME_RESTART_DELAY));
             }
             openedTruly = false;
         }
@@ -118,10 +118,10 @@ public class ChestOpen : MonoBehaviour
     }
 
 
-    IEnumerator RestartGame(float delay)
+    IEnumerator RestartGameWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        Debug.Log("Reloading scene...");
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Debug.Log($"Reloading scene in {delay} seconds...");
+        levelMan.restartGameInstant();
     }
 }
