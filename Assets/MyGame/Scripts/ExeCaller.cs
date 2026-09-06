@@ -33,7 +33,7 @@ public class ExeCaller : MonoBehaviour
             FileName = "cmd.exe",
             Arguments = "/c \"" + batPath + "\"",
             // Show the window so the user sees the download progress on the first run
-            CreateNoWindow = false,
+            CreateNoWindow = true,
             UseShellExecute = true,
         };
 

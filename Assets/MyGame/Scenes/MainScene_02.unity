@@ -1131,8 +1131,8 @@ MonoBehaviour:
   levelSwapper: {fileID: 30695165}
   video: {fileID: 976916775}
   possibleVideo:
-  - {fileID: 32900000, guid: 048f14cb6b485f94cb00a368a336e673, type: 3}
   - {fileID: 32900000, guid: 6b44249f69fc8284e82dbc39cdfa52e3, type: 3}
+  - {fileID: 32900000, guid: 048f14cb6b485f94cb00a368a336e673, type: 3}
   - {fileID: 32900000, guid: d640ca6bd842252409b24723d6b9cca5, type: 3}
   - {fileID: 32900000, guid: d8e61d7d0a7e66f45bb60fdfb283ab8a, type: 3}
   - {fileID: 32900000, guid: a65161b32a6849f42a756447faf6102e, type: 3}
@@ -1767,7 +1767,7 @@ Transform:
   m_GameObject: {fileID: 812321636}
   serializedVersion: 2
   m_LocalRotation: {x: 0.043619405, y: 0, z: 0, w: 0.9990483}
-  m_LocalPosition: {x: 0, y: 0, z: 5.37}
+  m_LocalPosition: {x: 0, y: -0.27, z: 5.37}
   m_LocalScale: {x: 0.48, y: 0.48, z: 0.48}
   m_ConstrainProportionsScale: 1
   m_Children: []

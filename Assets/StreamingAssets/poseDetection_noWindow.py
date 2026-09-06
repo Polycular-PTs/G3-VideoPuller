@@ -223,9 +223,9 @@ while True:
             if current_time - start_time >= 1.0:
                 summary_list = [f"{count}x_{action}" for action, count in action_counts.items() if count > 0]
                 
-                if summary_list:
-                    summary_text = ", ".join(summary_list)
-                    conn.sendall((summary_text + "\n").encode("utf-8"))
+                # If actions occurred, send them; otherwise send "none" to clear Unity's state
+                summary_text = ", ".join(summary_list) if summary_list else "nothing"
+                conn.sendall((summary_text + "\n").encode("utf-8"))
 
                 action_counts = {"waving": 0, "jumping": 0}
                 start_time = current_time

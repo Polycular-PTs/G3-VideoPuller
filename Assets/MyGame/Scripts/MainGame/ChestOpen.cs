@@ -39,7 +39,7 @@ public class ChestOpen : MonoBehaviour
         //Simon
         detectionMan = GameObject.FindGameObjectWithTag("DetectionManager").GetComponent<SocketRecieve_V2>();
         kurbelRotation = GameObject.FindGameObjectWithTag("KurbelRotMan").GetComponent<KurbelRotation>();
-        cameraReqs[0] = "waving"; cameraReqs[1] = "sad"; cameraReqs[2] = "2x_bottle"; cameraReqs[3] = "jumping"; cameraReqs[4] = "chair"; cameraReqs[5] = "keyboard";
+        cameraReqs[0] = "waving"; cameraReqs[1] = "happy"; cameraReqs[2] = "2x_bottle"; cameraReqs[3] = "jumping"; cameraReqs[4] = "3x_person"; cameraReqs[5] = "keyboard";
         detectionUsed[0] = 5006; detectionUsed[1] = 5005; detectionUsed[2] = 5005; detectionUsed[3] = 5006; detectionUsed[4] = 5005; detectionUsed[5] = 5005;
         
         currentGoalText.text = "Show The camera " + cameraReqs[stage];

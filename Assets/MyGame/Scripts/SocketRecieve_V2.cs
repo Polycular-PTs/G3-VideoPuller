@@ -49,7 +49,7 @@ public class SocketRecieve_V2 : MonoBehaviour
             {
                 Debug.Log("Message from Python revceived");
                 if (summaryText != null)
-                    summaryText.text = message;
+                    summaryText.text = "I currently see " + message;
                 else
                 {
                     Debug.Log("summary Text is null");
