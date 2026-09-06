@@ -28,6 +28,14 @@ In Unity muss das „Game“-Fenster abgedockt werden und
 
 Danach muss nur mehr auf „Play“ gedrückt werden.
 
+Makey Makey aufbau
+
+Der Makey Makey wird folgenderweise verkabelt:
+Das lange grüne Krokodil Kabel wird an eine Seite mit dem Earth des Makey Makey verbunden, und auf der anderen Seite mit dem weißen Kupferdraht.
+
+Die beiden gelben krokodil Kabel werden auf dem Makey Makey mit Arrow Left und Right verbunden und an der Kubel mit den beiden fesgeklebten 
+Steck-Kabeln
+
 
 
 
