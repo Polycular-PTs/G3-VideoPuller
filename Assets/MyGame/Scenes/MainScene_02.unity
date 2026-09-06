@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 195536757}
   - component: {fileID: 195536756}
   m_Layer: 0
-  m_Name: Spot Light
+  m_Name: SpotLightRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -981,7 +981,7 @@ MonoBehaviour:
   - {fileID: 32900000, guid: 048f14cb6b485f94cb00a368a336e673, type: 3}
   - {fileID: 32900000, guid: 6b44249f69fc8284e82dbc39cdfa52e3, type: 3}
   - {fileID: 32900000, guid: d640ca6bd842252409b24723d6b9cca5, type: 3}
-  - {fileID: 32900000, guid: a72c788116fade244a13bf7df49db8b7, type: 3}
+  - {fileID: 32900000, guid: d8e61d7d0a7e66f45bb60fdfb283ab8a, type: 3}
   - {fileID: 32900000, guid: a65161b32a6849f42a756447faf6102e, type: 3}
   - {fileID: 32900000, guid: ed72c617e83f5234297a8ce9e96318a3, type: 3}
 --- !u!4 &553119082
@@ -1392,7 +1392,7 @@ GameObject:
   - component: {fileID: 812321638}
   - component: {fileID: 812321637}
   m_Layer: 0
-  m_Name: InGameBG_0
+  m_Name: BottomBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2581,7 +2581,7 @@ GameObject:
   - component: {fileID: 1808875047}
   - component: {fileID: 1808875046}
   m_Layer: 0
-  m_Name: InGameBG_0 (1)
+  m_Name: TopBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2953,7 +2953,7 @@ GameObject:
   - component: {fileID: 2111453080}
   - component: {fileID: 2111453079}
   m_Layer: 0
-  m_Name: Spot Light (1)
+  m_Name: SpotLightLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

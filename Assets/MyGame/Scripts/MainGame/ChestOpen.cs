@@ -18,7 +18,7 @@ public class ChestOpen : MonoBehaviour
     const int CONNECTION_DELAY_STAGE1 = 5;
     const int CONNECTION_DELAY_OTHER_STAGES = 4;
     const float GAME_RESTART_DELAY = 20f;
-    const float DELAY_REACTION = 2.5f;
+    const float DELAY_REACTION = 4.5f;
     public bool openedTruly;
     public string camMessage; //Simon
 
