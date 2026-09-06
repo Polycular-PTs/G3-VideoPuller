@@ -19,8 +19,13 @@ Das Projekt dient also als soziales Experiment, in dem man herausfindet, wie wei
 # hier im Bild
 <img width="303" height="677" alt="image" src="https://github.com/user-attachments/assets/f7091117-15de-41eb-bd6e-a4a90d8c8590" />
 4 Danach wird OBS minimiert aber nicht geschlossen
+
 5 Dann wird das Unity Projekt gestartet.
-6 In Unity muss das "Game" Fenster abgedockt werden und 7 über beide Bildschirme gezogen werden.
+
+6 In Unity muss das "Game" Fenster abgedockt werden und 
+
+7 über beide Bildschirme gezogen werden.
+
 8 Danach muss nur mehr auf Play gedrückt werden.
 
 
