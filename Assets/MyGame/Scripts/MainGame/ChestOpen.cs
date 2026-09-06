@@ -12,12 +12,13 @@ public class ChestOpen : MonoBehaviour
     [SerializeField] string[] cameraReqs; //Simon
     [SerializeField] int[] detectionUsed; //Simon
     [SerializeField] GameObject nextChest;
+    [SerializeField] GameObject endScreenPanel;
 
     const float OPEN_THRESHOLD_DEGREES = 170f; //Simon
     const float CLOSE_THRESHOLD_DEGREES = 10f; //Simon
     const int CONNECTION_DELAY_STAGE1 = 5;
     const int CONNECTION_DELAY_OTHER_STAGES = 4;
-    const float GAME_RESTART_DELAY = 20f;
+    const float GAME_RESTART_DELAY = 30f;
     const float DELAY_REACTION = 4.5f;
     public bool openedTruly;
     public string camMessage; //Simon
@@ -41,7 +42,7 @@ public class ChestOpen : MonoBehaviour
         cameraReqs[0] = "waving"; cameraReqs[1] = "sad"; cameraReqs[2] = "2x_bottle"; cameraReqs[3] = "jumping"; cameraReqs[4] = "chair"; cameraReqs[5] = "keyboard";
         detectionUsed[0] = 5006; detectionUsed[1] = 5005; detectionUsed[2] = 5005; detectionUsed[3] = 5006; detectionUsed[4] = 5005; detectionUsed[5] = 5005;
         
-        currentGoalText.text = cameraReqs[stage];
+        currentGoalText.text = "Show The camera " + cameraReqs[stage];
         if (stage == 0)
         {
             StartCoroutine(ConnectNextStage(stage, CONNECTION_DELAY_STAGE1));
@@ -69,12 +70,27 @@ public class ChestOpen : MonoBehaviour
         if (rotationDegrees >= OPEN_THRESHOLD_DEGREES && !openedTruly //Gabriel
             && detectionMan.message.Contains(cameraReqs[stage])) //Simon
         {
-            Debug.Log($"Playing video for stage: {stage}");
-            videoMan.PlayVideo(stage);
-            openedTruly = true;
+            if (nextChest != null)
+            {
+                Debug.Log($"Playing video for stage: {stage}");
+                videoMan.PlayVideo(stage);
+                openedTruly = true;
 
-            detectionMan.SendCaptureCommand($"stage_{stage}_action.jpg");
-            StartCoroutine(CaptureReelReaction(DELAY_REACTION));
+                detectionMan.SendCaptureCommand($"stage_{stage}_action.jpg");
+                StartCoroutine(CaptureReelReaction(DELAY_REACTION));
+            }
+
+            else
+            {
+                Debug.Log("Fertig. Spiel startet in 30 Sekunden neu");
+
+                if (endScreenPanel != null)
+                {
+                    endScreenPanel.SetActive(true);
+                }
+
+                StartCoroutine(RestartGameWithDelay(GAME_RESTART_DELAY));
+            }
         }
         else if (rotationDegrees < CLOSE_THRESHOLD_DEGREES && openedTruly == true)
         {
@@ -91,8 +107,7 @@ public class ChestOpen : MonoBehaviour
             }
             else
             {
-                Debug.Log("Fertig");
-                StartCoroutine(RestartGameWithDelay(GAME_RESTART_DELAY));
+                Debug.LogError("next chest unassigned");
             }
             openedTruly = false;
         }
