@@ -1,52 +1,66 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-
-
 public class KurbelRotation : MonoBehaviour
-{ 
+{
+    public float targetAngle = 0f;
+    private float currentVisualAngle = 0f;
 
-    public float currentAngle = 0f;
+    // Diese Property simuliert die alte Variable für VideoManager.cs und ChestOpen.cs
+    public float currentAngle
+    {
+        get { return currentVisualAngle; }
+        set
+        {
+            currentVisualAngle = value;
+            targetAngle = value;
+        }
+    }
+
     public float stepAngle = 30f;
-    public Text gradText; 
+    public Text gradText;
+
+    private float rotationVelocity = 0f;
+    public bool isLocked = false;
 
     void Update()
     {
-       
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (!isLocked)
         {
-            currentAngle += stepAngle;
-            ApplyRotation();
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                targetAngle += stepAngle;
+            }
+
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                targetAngle -= stepAngle;
+            }
+
+            targetAngle = Mathf.Clamp(targetAngle, 0f, 180f);
+
+            if (targetAngle >= 180f)
+            {
+                isLocked = true;
+            }
         }
 
-        
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            currentAngle -= stepAngle;
-            ApplyRotation();
-        }
+        currentVisualAngle = Mathf.SmoothDamp(currentVisualAngle, targetAngle, ref rotationVelocity, 0.5f);
+
+        ApplyRotation();
         UpdateUI();
     }
 
     void ApplyRotation()
     {
-        
-        currentAngle = currentAngle % 360f;
-        if (currentAngle < 0) currentAngle += 360f;
-
-        
-        transform.rotation = Quaternion.Euler(0f, 0f, currentAngle);
+        transform.rotation = Quaternion.Euler(0f, 0f, currentVisualAngle);
     }
+
     void UpdateUI()
     {
         if (gradText != null)
         {
-
-            
-            gradText.text = $"Gradzahl: {currentAngle:F1} ";
-
+            gradText.text = $"Gradzahl: {currentVisualAngle:F1} ";
         }
     }
 }
- 
-

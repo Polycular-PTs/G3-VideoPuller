@@ -23,15 +23,11 @@ def get_obs_camera_index():
         print(f"Error reading camera names: {e}")
     return 0
 
-
-
-
 def save_smart_crop_object(frame, results, filename, last_face_pos):
     h, w, _ = frame.shape
     center_x, center_y = None, None
     crop_size = None
 
-    # 1. Strictly filter for 'person' class (cls == 0)
     person_boxes = []
     for box in results[0].boxes:
         if int(box.cls[0]) == 0 and float(box.conf[0]) > 0.3:
@@ -40,17 +36,16 @@ def save_smart_crop_object(frame, results, filename, last_face_pos):
             person_boxes.append((area, xyxy))
 
     if person_boxes:
-        person_boxes.sort(key=lambda b: b[0], reverse=True) # Largest person
+        person_boxes.sort(key=lambda b: b[0], reverse=True) 
         _, xyxy = person_boxes[0]
         
         box_w = xyxy[2] - xyxy[0]
         box_h = xyxy[3] - xyxy[1]
         
         center_x = (xyxy[0] + xyxy[2]) // 2
-        center_y = xyxy[1] + int(box_h * 0.22) # Upper 22% targets the face
+        center_y = xyxy[1] + int(box_h * 0.22) 
         crop_size = int(max(box_w * 1.5, box_h * 0.55))
 
-    # 2. Fallback to Last Known Position or Screen Center
     if center_x is None:
         if last_face_pos is not None:
             center_x, center_y, crop_size = last_face_pos
@@ -58,7 +53,6 @@ def save_smart_crop_object(frame, results, filename, last_face_pos):
             center_x, center_y = w // 2, int(h * 0.35)
             crop_size = int(min(w, h) * 0.5)
 
-    # 3. Calculate 1:1 Square Box & Shift Inward Away From Frame Edges
     crop_size = max(250, min(int(crop_size), min(w, h)))
     half = crop_size // 2
 
@@ -93,9 +87,6 @@ def save_smart_crop_object(frame, results, filename, last_face_pos):
     return (center_x, center_y, crop_size)
 
 
-
-
-
 model = YOLO("yolo11n.pt")
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -118,14 +109,19 @@ while True:
     
     max_objects = defaultdict(int)
     start_time = time.time()
-
     last_face_pos = None
+    debug_mode = False # <-- Auch hier der Default-Status
     
     try:
         while cap.isOpened():
             ret, frame = cap.read()
+            if not ret:
+                break
+                
+            results = model(frame, verbose=False)
+            annotated_frame = results[0].plot()
 
-            # Check for incoming capture commands from Unity
+            # TCP Befehle auslesen
             try:
                 data = conn.recv(1024).decode('utf-8')
                 if data:
@@ -133,14 +129,16 @@ while True:
                         if line.startswith("CAPTURE:"):
                             filename = line.split("CAPTURE:")[1]
                             last_face_pos = save_smart_crop_object(frame, results, filename, last_face_pos)
+                        elif line == "DEBUG:ON":
+                            print("[Debug Mode] Enabled")
+                            debug_mode = True
+                        elif line == "DEBUG:OFF":
+                            print("[Debug Mode] Disabled")
+                            debug_mode = False
+                            cv2.destroyAllWindows() # Fenster sofort zumachen
             except BlockingIOError:
                 pass
-            if not ret:
-                break
 
-            results = model(frame, verbose=False)
-            annotated_frame = results[0].plot() # Zeichnet Bounding Boxes von YOLO
-            
             frame_counts = defaultdict(int)
             person_emotions = []
 
@@ -161,17 +159,8 @@ while True:
                             dominant_emotion = emotion[0]['dominant_emotion']
                             person_emotions.append(dominant_emotion)
                             
-                            # Emotion als Text über der Person einblenden
-                            cv2.putText(
-                                annotated_frame,
-                                dominant_emotion,
-                                (x1, y1 - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.6,
-                                (255, 255, 0),
-                                2,
-                                cv2.LINE_AA
-                            )
+                            cv2.putText(annotated_frame, dominant_emotion, (x1, y1 - 10),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2, cv2.LINE_AA)
                         except:
                             pass
 
@@ -198,15 +187,15 @@ while True:
                 max_objects.clear()
                 start_time = current_time
 
-            # Feed im Fenster anzeigen
-            cv2.imshow("Object & Emotion Detection", annotated_frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break # Bricht die Frame-Schleife ab und wartet auf neuen Connect
+            # Rendern nur, wenn gewünscht
+            if debug_mode:
+                cv2.imshow("Object & Emotion Detection", annotated_frame)
+                cv2.waitKey(1)
 
     except (ConnectionAbortedError, ConnectionResetError, socket.error):
         print("Unity disconnected from Object Server.")
     finally:
         cap.release()
-        cv2.destroyAllWindows() # Verhindert eingefrorene Geisterfenster
+        cv2.destroyAllWindows()
         conn.close()
         print("Webcam and windows released. Ready for next connection.")
