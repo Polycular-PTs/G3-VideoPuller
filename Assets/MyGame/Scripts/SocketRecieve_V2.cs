@@ -10,12 +10,16 @@ public class SocketRecieve_V2 : MonoBehaviour
     public TcpClient client;
     StreamReader reader;
     public string message;
+    [SerializeField]
+    Button DebugButton;
+
+    // STATIC: Der Status bleibt global für das ganze Spiel erhalten, 
+    // egal wie oft du dich neu verbindest oder Skripte wechselst.
+    private static bool isDebugMode = false;
 
     void Start()
     {
         Application.targetFrameRate = 60;
-
-        
     }
 
     public void TryConnect(int port)
@@ -28,11 +32,17 @@ public class SocketRecieve_V2 : MonoBehaviour
             client = testClient;
             reader = new StreamReader(client.GetStream());
             Debug.Log("Connected on port " + port);
-            
+
+            // --- DER FIX ---
+            // Sobald die Verbindung steht, schießen wir sofort den aktuellen Status rüber!
+            StreamWriter writer = new StreamWriter(client.GetStream());
+            writer.AutoFlush = true;
+            writer.WriteLine(isDebugMode ? "DEBUG:ON" : "DEBUG:OFF");
+
         }
         catch (Exception)
         {
-            // Anderen Port versuchen, debug ist in anderem Codeblock
+            // Anderen Port versuchen
         }
     }
 
@@ -44,10 +54,12 @@ public class SocketRecieve_V2 : MonoBehaviour
             {
                 message = reader.ReadLine();
             }
-            
+
             if (!string.IsNullOrEmpty(message))
             {
-                Debug.Log("Message from Python revceived");
+                // Optional: Die ständigen Empfangs-Logs auskommentieren, falls sie die Konsole zuspammen
+                // Debug.Log("Message from Python received"); 
+
                 if (summaryText != null)
                     summaryText.text = "I currently see " + message;
                 else
@@ -57,7 +69,6 @@ public class SocketRecieve_V2 : MonoBehaviour
             }
         }
     }
-
 
     public void SendCaptureCommand(string fileName)
     {
@@ -77,6 +88,40 @@ public class SocketRecieve_V2 : MonoBehaviour
         }
     }
 
+    public void SwitchDebugMode()
+    {
+        // Toggle den Modus (gilt jetzt global wegen 'static')
+        isDebugMode = !isDebugMode;
+        Debug.Log($"[Socket] Internal debug state switched to: {isDebugMode}");
+
+        // Nur senden, wenn wir GERADE verbunden sind. 
+        // Wenn nicht, wird es sowieso beim nächsten TryConnect() gesendet!
+        if (client != null && client.Connected)
+        {
+            try
+            {
+                StreamWriter writer = new StreamWriter(client.GetStream());
+                writer.AutoFlush = true;
+                writer.WriteLine(isDebugMode ? "DEBUG:ON" : "DEBUG:OFF");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[Socket] Failed to send debug command: {e.Message}");
+            }
+        }
+
+        if (isDebugMode == true)
+        {
+            DebugButton.GetComponentInChildren<Text>().enabled = true;
+            DebugButton.GetComponent<Image>().color = new Color(255, 0, 233, 255);
+        }
+
+        else if (isDebugMode == false)
+        {
+            DebugButton.GetComponentInChildren<Text>().enabled = false;
+            DebugButton.GetComponent<Image>().color = new Color(255, 0, 233, 0);
+        }
+    }
 
     void OnApplicationQuit()
     {
@@ -118,5 +163,4 @@ public class SocketRecieve_V2 : MonoBehaviour
             Debug.LogError("Error while closing connection: " + e.Message);
         }
     }
-
 }

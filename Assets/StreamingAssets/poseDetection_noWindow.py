@@ -27,7 +27,6 @@ def save_smart_crop_pose(frame, results, filename, last_face_pos):
     center_x, center_y = None, None
     crop_size = None
 
-    # 1. Target Face Keypoints (Nose: 0, Eyes: 1/2, Shoulders: 5/6)
     if results[0].keypoints is not None and len(results[0].keypoints) > 0:
         kp = results[0].keypoints[0].xy[0].cpu().numpy()
         conf = results[0].keypoints[0].conf[0].cpu().numpy()
@@ -39,16 +38,14 @@ def save_smart_crop_pose(frame, results, filename, last_face_pos):
             center_y = (kp[1][1] + kp[2][1]) / 2.0
         elif conf[5] > 0.3 and conf[6] > 0.3:
             center_x = (kp[5][0] + kp[6][0]) / 2.0
-            center_y = (kp[5][1] + kp[6][1]) / 2.0 - 60 # Above shoulders
+            center_y = (kp[5][1] + kp[6][1]) / 2.0 - 60 
 
-        # Calculate crop size from shoulder width
         if conf[5] > 0.3 and conf[6] > 0.3:
             shoulder_dist = np.linalg.norm(kp[5] - kp[6])
-            crop_size = int(shoulder_dist * 2.2) # Fits head + upper chest
+            crop_size = int(shoulder_dist * 2.2) 
         else:
             crop_size = int(h * 0.35)
 
-    # 2. Fallback to Last Known Position or Screen Center
     if center_x is None:
         if last_face_pos is not None:
             center_x, center_y, crop_size = last_face_pos
@@ -56,7 +53,6 @@ def save_smart_crop_pose(frame, results, filename, last_face_pos):
             center_x, center_y = w // 2, int(h * 0.35)
             crop_size = int(min(w, h) * 0.5)
 
-    # 3. Calculate 1:1 Square Box & Shift Inward Away From Frame Edges
     crop_size = max(250, min(int(crop_size), min(w, h)))
     half = crop_size // 2
 
@@ -90,7 +86,6 @@ def save_smart_crop_pose(frame, results, filename, last_face_pos):
     
     return (center_x, center_y, crop_size)
 
-
 model = YOLO("yolo11n-pose.pt")
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -106,7 +101,7 @@ keypoint_names = [
     "left_knee", "right_knee", "left_ankle", "right_ankle"
 ]
 
-CONF_THRESHOLD = 0.5  # Ignore uncertain/cut-off keypoints
+CONF_THRESHOLD = 0.5  
 
 while True:
     print("Waiting for Unity to connect...")
@@ -126,12 +121,18 @@ while True:
     action_counts = {"waving": 0, "jumping": 0}
 
     last_face_pos = None
-
+    debug_mode = False # <-- Hier setzen wir den Standardwert
 
     try:
         while cap.isOpened():
             ret, frame = cap.read()
+            if not ret:
+                break
+                
+            results = model(frame, verbose=False)
+            annotated = results[0].plot()
 
+            # Commands lesen (Nachdem 'results' existiert!)
             try:
                 data = conn.recv(1024).decode('utf-8')
                 if data:
@@ -139,14 +140,15 @@ while True:
                         if line.startswith("CAPTURE:"):
                             filename = line.split("CAPTURE:")[1]
                             last_face_pos = save_smart_crop_pose(frame, results, filename, last_face_pos)
+                        elif line == "DEBUG:ON":
+                            print("[Debug Mode] Enabled")
+                            debug_mode = True
+                        elif line == "DEBUG:OFF":
+                            print("[Debug Mode] Disabled")
+                            debug_mode = False
+                            cv2.destroyAllWindows() # Fenster sofort schließen
             except BlockingIOError:
                 pass
-            
-            if not ret:
-                break
-
-            results = model(frame, verbose=False)
-            annotated = results[0].plot()
 
             wave_state = "none"
             jump_state = "none"
@@ -157,35 +159,21 @@ while True:
                     confidences = pose.conf[0].cpu().numpy()
                     
                     if len(keypoints) >= 17:
-                        # Helper to check if a specific keypoint is reliably in-frame
                         is_valid = lambda idx: confidences[idx] >= CONF_THRESHOLD and keypoints[idx][0] > 0
 
-                        # Draw only confident keypoints
                         for i, (x, y) in enumerate(keypoints):
                             if is_valid(i):
                                 name = keypoint_names[i] if i < len(keypoint_names) else f"kp_{i}"
-                                cv2.putText(
-                                    annotated, f"{i}:{name}", (int(x) + 5, int(y) - 5),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, cv2.LINE_AA
-                                )
+                                cv2.putText(annotated, f"{i}:{name}", (int(x) + 5, int(y) - 5),
+                                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 255), 1, cv2.LINE_AA)
                                 cv2.circle(annotated, (int(x), int(y)), 3, (0, 255, 255), -1)
 
-                        # --- WAVING DETECTION ---
-                        # Check left wrist to left shoulder, right wrist to right shoulder
-                        left_wave = (
-                            is_valid(9) and is_valid(5) and 
-                            keypoints[9][1] < (keypoints[5][1] - 20)
-                        )
-                        right_wave = (
-                            is_valid(10) and is_valid(6) and 
-                            keypoints[10][1] < (keypoints[6][1] - 20)
-                        )
+                        left_wave = (is_valid(9) and is_valid(5) and keypoints[9][1] < (keypoints[5][1] - 20))
+                        right_wave = (is_valid(10) and is_valid(6) and keypoints[10][1] < (keypoints[6][1] - 20))
 
                         if left_wave or right_wave:
                             wave_state = "waving"
 
-                        # --- JUMPING DETECTION ---
-                        # Track hips normalized by torso height
                         if is_valid(11) and is_valid(12):
                             current_hip_y = (keypoints[11][1] + keypoints[12][1]) / 2.0
 
@@ -196,11 +184,10 @@ while True:
                                 torso_height = 200.0
 
                             if previous_hip_y is not None and previous_torso_height is not None:
-                                dy = previous_hip_y - current_hip_y  # Upward movement
+                                dy = previous_hip_y - current_hip_y  
                                 torso_change = (torso_height - previous_torso_height) / previous_torso_height
                                 jump_velocity = dy / torso_height
 
-                                # Check: upward motion speed >= 8% of body height AND body didn't shrink backwards
                                 if jump_velocity > 0.08 and torso_change > -0.04:
                                     jump_state = "jumping"
 
@@ -215,25 +202,22 @@ while True:
             if jump_state == "jumping":
                 action_counts["jumping"] += 1
                 
-            # Actions ins Bild schreiben
             cv2.putText(annotated, f"Wave: {wave_state}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
             cv2.putText(annotated, f"Jump: {jump_state}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
             current_time = time.time()
             if current_time - start_time >= 1.0:
                 summary_list = [f"{count}x_{action}" for action, count in action_counts.items() if count > 0]
-                
-                # If actions occurred, send them; otherwise send "none" to clear Unity's state
                 summary_text = ", ".join(summary_list) if summary_list else "nothing"
                 conn.sendall((summary_text + "\n").encode("utf-8"))
 
                 action_counts = {"waving": 0, "jumping": 0}
                 start_time = current_time
 
-            # Feed im Fenster anzeigen
-            cv2.imshow("Pose Detection", annotated)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break 
+            # Nur rendern, wenn Debug Mode aktiv ist
+            if debug_mode:
+                cv2.imshow("Pose Detection", annotated)
+                cv2.waitKey(1)
 
     except (ConnectionAbortedError, ConnectionResetError, socket.error):
         print("Unity disconnected from Pose Server.")

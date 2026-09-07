@@ -97,6 +97,7 @@ public class ChestOpen : MonoBehaviour
             detectionMan.CloseConnection(); //Simon
             videoMan.StopVideo();
             kurbelRotation.currentAngle = 0f;
+            kurbelRotation.isLocked = false;
 
             if (nextChest != null)
             {
