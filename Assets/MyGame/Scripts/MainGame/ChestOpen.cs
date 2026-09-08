@@ -26,7 +26,7 @@ public class ChestOpen : MonoBehaviour
     const float CLOSE_THRESHOLD_DEGREES = 10f;
     const int CONNECTION_DELAY_STAGE1 = 5;
     const int CONNECTION_DELAY_OTHER_STAGES = 4;
-    const float GAME_RESTART_DELAY = 30f;
+    const float GAME_RESTART_DELAY = 40f;
     const float DELAY_REACTION = 4.5f;
 
     public bool openedTruly;
