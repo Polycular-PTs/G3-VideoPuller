@@ -12,6 +12,8 @@ public class SocketRecieve_V2 : MonoBehaviour
     public string message;
     [SerializeField]
     Button DebugButton;
+    [SerializeField]
+    Button CameraSkipButton;
 
     // STATIC: Der Status bleibt global für das ganze Spiel erhalten, 
     // egal wie oft du dich neu verbindest oder Skripte wechselst.
@@ -112,14 +114,26 @@ public class SocketRecieve_V2 : MonoBehaviour
 
         if (isDebugMode == true)
         {
+
             DebugButton.GetComponentInChildren<Text>().enabled = true;
             DebugButton.GetComponent<Image>().color = new Color(255, 0, 233, 255);
+            
+            CameraSkipButton.GetComponent<Image>().enabled = true;
+            CameraSkipButton.GetComponent<Button>().enabled = true;
+            CameraSkipButton.GetComponentInChildren<Text>().enabled = true;
+            DebugSkipButton.skipCameraRequirement = false;
+            CameraSkipButton.GetComponent<DebugSkipButton>().UpdateButtonVisuals();
+
         }
 
         else if (isDebugMode == false)
         {
             DebugButton.GetComponentInChildren<Text>().enabled = false;
             DebugButton.GetComponent<Image>().color = new Color(255, 0, 233, 0);
+            DebugSkipButton.skipCameraRequirement = false;
+            CameraSkipButton.GetComponent<Image>().enabled = false;
+            CameraSkipButton.GetComponent<Button>().enabled = false;
+            CameraSkipButton.GetComponentInChildren<Text>().enabled = false;
         }
     }
 

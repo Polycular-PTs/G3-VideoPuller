@@ -14,6 +14,7 @@ public class ChestOpen : MonoBehaviour
     [SerializeField] int[] detectionUsed;
     [SerializeField] GameObject nextChest;
     [SerializeField] GameObject endScreenPanel;
+    [SerializeField] DebugSkipButton debugMan;
 
     [Header("Colors & Pulse")]
     [SerializeField] Color defaultSliderColor = Color.black;
@@ -43,6 +44,7 @@ public class ChestOpen : MonoBehaviour
         levelMan = GameObject.FindGameObjectWithTag("LevelManager").GetComponent<LevelManager>();
         detectionMan = GameObject.FindGameObjectWithTag("DetectionManager").GetComponent<SocketRecieve_V2>();
         kurbelRotation = GameObject.FindGameObjectWithTag("KurbelRotMan").GetComponent<KurbelRotation>();
+        debugMan = GameObject.FindGameObjectWithTag("DebugMan").GetComponent<DebugSkipButton>();
 
         // Fill-Image des Sliders automatisch holen, falls nicht im Inspector zugewiesen
         if (sliderFillImage == null && slider != null && slider.fillRect != null)
@@ -60,7 +62,7 @@ public class ChestOpen : MonoBehaviour
             baseTextScale = currentGoalText.transform.localScale;
         }
 
-        cameraReqs[0] = "waving"; cameraReqs[1] = "happy"; cameraReqs[2] = "2x_bottle"; cameraReqs[3] = "jumping"; cameraReqs[4] = "3x_person"; cameraReqs[5] = "2x_book";
+        cameraReqs[0] = "waving"; cameraReqs[1] = "happy"; cameraReqs[2] = "2x_bottle"; cameraReqs[3] = "jumping"; cameraReqs[4] = "3x_person"; cameraReqs[5] = "book";
         detectionUsed[0] = 5006; detectionUsed[1] = 5005; detectionUsed[2] = 5005; detectionUsed[3] = 5006; detectionUsed[4] = 5005; detectionUsed[5] = 5005;
 
         UpdateGoalText(0f);
@@ -139,10 +141,11 @@ public class ChestOpen : MonoBehaviour
 
     void OpenTheChest(float rotationDegrees)
     {
+        bool cameraConditionMet = DebugSkipButton.skipCameraRequirement || detectionMan.message.Contains(cameraReqs[stage]);
         gameObject.transform.rotation = Quaternion.Euler(rotationDegrees, 0, 0);
 
         if (rotationDegrees >= OPEN_THRESHOLD_DEGREES && !openedTruly
-            && detectionMan.message.Contains(cameraReqs[stage]))
+            && cameraConditionMet)
         {
             if (nextChest != null)
             {
@@ -155,6 +158,7 @@ public class ChestOpen : MonoBehaviour
             }
             else
             {
+                detectionMan.SendCaptureCommand($"stage_{stage}_action.jpg");
                 Debug.Log("Fertig. Spiel startet in 30 Sekunden neu");
 
                 if (endScreenPanel != null)
