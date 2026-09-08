@@ -79,3 +79,4 @@ crashlytics-build.properties
 # Recognition Assets
 /Assets/StreamingAssets/python310
 /Assets/StreamingAssets/python310.meta
+/captures

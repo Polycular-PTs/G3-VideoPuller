@@ -208,7 +208,7 @@ while True:
             current_time = time.time()
             if current_time - start_time >= 1.0:
                 summary_list = [f"{count}x_{action}" for action, count in action_counts.items() if count > 0]
-                summary_text = ", ".join(summary_list) if summary_list else "nothing"
+                summary_text = ", ".join(summary_list) if summary_list else "no actions"
                 conn.sendall((summary_text + "\n").encode("utf-8"))
 
                 action_counts = {"waving": 0, "jumping": 0}

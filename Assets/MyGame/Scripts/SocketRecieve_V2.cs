@@ -155,7 +155,7 @@ public class SocketRecieve_V2 : MonoBehaviour
 
             if (summaryText != null)
             {
-                summaryText.text = "Ready for next connection!";
+                summaryText.text = "I'm not ready to see yet.";
             }
         }
         catch (Exception e)

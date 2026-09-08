@@ -15,7 +15,7 @@ IF NOT EXIST "python310\python.exe" (
 )
 
 echo Starting Object Detection Server in background...
-start "objectDetection" python310\python.exe objectDetection_noWindow.py
+start /b python310\pythonw.exe objectDetection_noWindow.py
 
 echo Starting Pose Detection Server in foreground...
 python310\python.exe poseDetection_noWindow.py

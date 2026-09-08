@@ -34,7 +34,7 @@ public class ExeCaller : MonoBehaviour
             Arguments = "/c \"" + batPath + "\"",
             // Show the window so the user sees the download progress on the first run
             CreateNoWindow = true,
-            UseShellExecute = true,
+            UseShellExecute = false,
         };
 
         masterBackendProcess = Process.Start(startInfo);
